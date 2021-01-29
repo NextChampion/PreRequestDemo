@@ -32,7 +32,7 @@
 }
 
 - (void)jumpToRnScreen {
-  NSString *ts = [KSDate getNowTimeTimestamp3];
+  NSString *ts = [NSString stringWithFormat:@"%f",  CFAbsoluteTimeGetCurrent()];
   RNViewController *rnVC = [[RNViewController alloc] init];
   rnVC.clickTime = ts;
   [self.navigationController pushViewController:rnVC animated:YES];
