@@ -22,6 +22,8 @@
 		602AB1ED25C2B03B009F19D2 /* KSDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AB1EC25C2B03B009F19D2 /* KSDate.m */; };
 		602AB22425C2C232009F19D2 /* KSNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AB22325C2C232009F19D2 /* KSNetwork.m */; };
 		602AB22B25C2C9DD009F19D2 /* DPNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AB22A25C2C9DD009F19D2 /* DPNetworkManager.m */; };
+		6054253025C3DED500810668 /* KSNetworkCacheItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6054252F25C3DED500810668 /* KSNetworkCacheItem.m */; };
+		6054256525C3FFA600810668 /* KSConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 6054252825C3DC1800810668 /* KSConvert.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		842EC00C5A31892F3F81EAD5 /* libPods-PreRequestDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B816CBBE30A4F49CC02ADEA6 /* libPods-PreRequestDemo.a */; };
 		CB8AE7E74F15A36276F40B64 /* libPods-PreRequestDemo-PreRequestDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88FB1F9BF424ACDFF712624F /* libPods-PreRequestDemo-PreRequestDemoTests.a */; };
@@ -76,6 +78,10 @@
 		602AB22A25C2C9DD009F19D2 /* DPNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DPNetworkManager.m; path = ../../../../Desktop/DPNetworkManager.m; sourceTree = "<group>"; };
 		602AB24025C2D076009F19D2 /* DPNetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DPNetworkManager.h; sourceTree = "<group>"; };
 		602AB24125C2D076009F19D2 /* DPNetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DPNetworkManager.m; sourceTree = "<group>"; };
+		6054252725C3DC1800810668 /* KSConvert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KSConvert.h; sourceTree = "<group>"; };
+		6054252825C3DC1800810668 /* KSConvert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KSConvert.m; sourceTree = "<group>"; };
+		6054252E25C3DED500810668 /* KSNetworkCacheItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KSNetworkCacheItem.h; sourceTree = "<group>"; };
+		6054252F25C3DED500810668 /* KSNetworkCacheItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KSNetworkCacheItem.m; sourceTree = "<group>"; };
 		6664375D353FFB2B33991C68 /* libPods-PreRequestDemo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PreRequestDemo-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		69A963DCBA75A62C70C794AD /* Pods-PreRequestDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PreRequestDemo.debug.xcconfig"; path = "Target Support Files/Pods-PreRequestDemo/Pods-PreRequestDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		71C2B68C126133AF4CAAB601 /* Pods-PreRequestDemo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PreRequestDemo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-PreRequestDemo-tvOS/Pods-PreRequestDemo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -145,6 +151,7 @@
 		13B07FAE1A68108700A75B9A /* PreRequestDemo */ = {
 			isa = PBXGroup;
 			children = (
+				6054252D25C3DEB000810668 /* models */,
 				602AB24225C2D096009F19D2 /* exportToRnModule */,
 				602AB23F25C2D070009F19D2 /* utils */,
 				602AB23A25C2D052009F19D2 /* controllers */,
@@ -194,6 +201,8 @@
 				602AB1EC25C2B03B009F19D2 /* KSDate.m */,
 				602AB24025C2D076009F19D2 /* DPNetworkManager.h */,
 				602AB24125C2D076009F19D2 /* DPNetworkManager.m */,
+				6054252725C3DC1800810668 /* KSConvert.h */,
+				6054252825C3DC1800810668 /* KSConvert.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -205,6 +214,15 @@
 				602AB22325C2C232009F19D2 /* KSNetwork.m */,
 			);
 			path = exportToRnModule;
+			sourceTree = "<group>";
+		};
+		6054252D25C3DEB000810668 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				6054252E25C3DED500810668 /* KSNetworkCacheItem.h */,
+				6054252F25C3DED500810668 /* KSNetworkCacheItem.m */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -625,7 +643,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6054256525C3FFA600810668 /* KSConvert.m in Sources */,
 				602AB1E625C2AAA8009F19D2 /* RNViewController.m in Sources */,
+				6054253025C3DED500810668 /* KSNetworkCacheItem.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				602AB1D825C2A7CB009F19D2 /* FirstViewController.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
