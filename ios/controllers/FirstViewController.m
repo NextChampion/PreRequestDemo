@@ -32,9 +32,7 @@
 }
 
 - (void)jumpToRnScreen {
-  NSLog(@"跳转到rn");
   NSString *ts = [KSDate getNowTimeTimestamp3];
-  NSLog(@"点击按钮的时间：%@",ts);
   RNViewController *rnVC = [[RNViewController alloc] init];
   rnVC.clickTime = ts;
   [self.navigationController pushViewController:rnVC animated:YES];
