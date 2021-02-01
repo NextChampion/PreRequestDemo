@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,6 +57,16 @@ typedef void (^responseFailure)(DPRequestStatu status);
             params:(nonnull NSDictionary *)params
            success:(responseSuccess)success
               fail:(responseFailure)fail;
+
+
+- (void)prePost:(nonnull NSString *)urlString
+         params:(NSDictionary * )params;
+
+
+- (void)post:(nonnull NSString *)urlString
+      params:(NSDictionary *)params
+    resolver:(RCTPromiseResolveBlock)resolve
+    rejecter:(RCTPromiseRejectBlock)reject;
 @end
 
 NS_ASSUME_NONNULL_END

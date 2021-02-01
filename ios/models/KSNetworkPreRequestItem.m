@@ -5,8 +5,8 @@
 //  Created by zhangcunxia on 2021/1/29.
 //
 
-#import "KSNetworkCacheItem.h"
+#import "KSNetworkPreRequestItem.h"
 
-@implementation KSNetworkCacheItem
+@implementation KSNetworkPreRequestItem
 
 @end

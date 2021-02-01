@@ -8,6 +8,7 @@
 #import "FirstViewController.h"
 #import "RNViewController.h"
 #import "KSDate.h"
+#import "DPNetworkManager.h"
 
 @interface FirstViewController ()
 
@@ -35,6 +36,8 @@
   NSString *ts = [NSString stringWithFormat:@"%f",  CFAbsoluteTimeGetCurrent()];
   RNViewController *rnVC = [[RNViewController alloc] init];
   rnVC.clickTime = ts;
+  NSString *urlString = [NSString stringWithFormat:@"http://v.juhe.cn/toutiao/index?type=top&key=b6a70a0df051ea3e4b7e62f90e17e1a3"];
+  [kNetwork prePost:urlString params:nil];
   [self.navigationController pushViewController:rnVC animated:YES];
 }
 

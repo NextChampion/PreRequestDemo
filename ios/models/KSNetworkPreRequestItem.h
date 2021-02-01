@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^onRequestFinishedBlock)(BOOL success,id result, NSError *error);
 
-@interface KSNetworkCacheItem : NSObject
+@interface KSNetworkPreRequestItem : NSObject
 
 @property (nonatomic, strong) NSString *key;// 唯一id
 @property (nonatomic, assign) BOOL isPropressing; // 是否进行中

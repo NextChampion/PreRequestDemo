@@ -7,6 +7,18 @@
 //
 
 #import "DPNetworkManager.h"
+#import "KSConvert.h"
+#import "KSNetworkPreRequestItem.h"
+#import <CommonCrypto/CommonDigest.h>
+#import <pthread.h>
+
+@interface DPNetworkManager (){
+  pthread_mutex_t _lock;
+}
+
+@property (nonatomic, strong) NSMutableDictionary *preRequestDic;
+
+@end
 
 @implementation DPNetworkManager
 
@@ -18,6 +30,155 @@
     });
     return manager;
 }
+
+- (NSMutableDictionary *)preRequestDic {
+  if (_preRequestDic == nil) {
+    _preRequestDic = [NSMutableDictionary dictionary];
+  }
+  return _preRequestDic;
+}
+
+- (void)prePost:(NSString *)urlString
+         params:(NSDictionary * )params {
+  // 生成key
+  NSString *requestKey = [self requestKeyWithUrlString:urlString params:params];
+  NSLog(@"转换后的key=%@", requestKey);
+  // 检查是否有缓存
+  KSNetworkPreRequestItem *oldItem = [self itemForRequestKey:requestKey];
+  // 如果有缓存对象 (比如手误,或者卡顿导致rn入口被连击,发起两个预请求),如果有缓存对象,这不处理后续的
+  if (oldItem != nil && oldItem.isPropressing == YES) {
+    return;
+  }
+  // 如果没有缓存信息,则创建预请求的缓存对象
+  KSNetworkPreRequestItem *newItem = [[KSNetworkPreRequestItem alloc] init];
+  newItem.key = requestKey;
+  // 标记当前预请求开始
+  newItem.isPropressing = YES;
+  // 然后将预请求信息存起来
+  [self.preRequestDic setValue:newItem forKey:requestKey];
+  
+  __weak typeof(self) weakSelf = self;
+  // 然后发起网络请求请求数据
+  [self requestPOST:urlString params:params success:^(id  _Nonnull result) {
+    NSLog(@"预请求成功");
+      // 请求成功,标记预请求结束
+    newItem.isPropressing = NO;
+      // 检查是否有回调,如果有的话, 表明非预请求的请求已经发了 直接通过回调返回数据,不再存在缓存里
+    NSLog(@"预请求成功 newPreRequest.callBacks = %@",newItem.callBacks);
+      if (newItem.callBacks.count > 0) {
+        for (int i = 0; i < newItem.callBacks.count; i ++) {
+          onRequestFinishedBlock callBack = newItem.callBacks[i];
+          if (callBack != nil) {
+            callBack(true, result, nil);
+          }
+        }
+        // 同时也清除本次预请求的缓存信息
+        [weakSelf.preRequestDic setValue:nil forKey:requestKey];
+        return;;
+      }
+    // 如果没有回调任务, 记录一下预请求的结果
+    newItem.isError = NO;
+    newItem.result = result;
+    } fail:^(DPRequestStatu status) {
+      NSLog(@"预请求失败");
+      // 请求失败,标记预请求结束
+      newItem.isPropressing = NO;
+      // 检查是否有回调,如果有的话 直接通过回调返回数据,不在存在缓存里
+      if (newItem.callBacks.count > 0) {
+        for (int i = 0; i < newItem.callBacks.count; i ++) {
+          onRequestFinishedBlock callBack = newItem.callBacks[i];
+          if (callBack != nil) {
+            NSError *err = [NSError errorWithDomain:urlString code:status userInfo:nil];
+            callBack(false, nil, err);
+          }
+        }
+        // 清除本次请求的缓存对象
+        [weakSelf.preRequestDic setValue:nil forKey:requestKey];
+        return;;
+      }
+      // 如果没有回调任务, 记录一下预请求的结果
+      newItem.isError = YES;
+      newItem.errorCode = status;
+    }];
+}
+
+
+- (void)post:(NSString *)urlString
+      params:(NSDictionary *)params
+    resolver:(RCTPromiseResolveBlock)resolve
+    rejecter:(RCTPromiseRejectBlock)reject {
+  NSLog(@"urlString= %@",urlString);
+  NSLog(@"params= %@",params);
+  // 对请求进行编码
+  NSString *requestKey = [self requestKeyWithUrlString:urlString params:params];
+  NSLog(@"正式请求生成的key=%@", requestKey);
+  // 查询是否有当前请求的预请求
+  KSNetworkPreRequestItem *preRequestItem = [self itemForRequestKey:requestKey];
+  NSLog(@"正式请求的cache=%@", preRequestItem);
+  // 如果存在预请求
+  if (preRequestItem != nil) {
+    NSLog(@"正式请求的isPropressing=%d", preRequestItem.isPropressing);
+    // 预请求是否正在进行中
+    if (preRequestItem.isPropressing) {
+      // 如果正在进行中,创建一个回调任务,添加到回调队列里
+      onRequestFinishedBlock block = ^(BOOL success,id result, NSError *error){
+        if (success) {
+          resolve(result);
+        } else {
+          reject(@"no_events", @"There were no events", error);
+        }
+      };
+      NSLog(@"添加回调任务");
+      [preRequestItem.callBacks addObject:block];
+      // 然后本次请求结束
+      return;
+    }
+    // 如果预请求结束
+    // 查看请求结果是否成功
+    // 如果预请求失败,表明当前请求失败,本次也不处理,回调失败的结果
+    if (preRequestItem.isError) {
+      NSError *err = [NSError errorWithDomain:urlString code:preRequestItem.errorCode userInfo:nil];
+      reject(@"no_events", @"There were no events", err);
+      // 清除预请求缓存信息
+      [self.preRequestDic setValue:nil forKey:requestKey];
+      return;
+    }
+    // 如果预请求成功
+    // 返回成功的结果
+    resolve(preRequestItem.result);
+    // 清除预请求缓存信息
+    [self.preRequestDic setValue:nil forKey:requestKey];
+    return;
+  }
+  
+  // 如果不存在预请求, 发起普通请求
+  [self requestPOST:urlString params:params success:^(id  _Nonnull result) {
+      resolve(result);
+    } fail:^(DPRequestStatu status) {
+      reject(@"no_events", @"There were no events", nil);
+    }];
+}
+
+
+- (NSString *)requestKeyWithUrlString: (NSString *)url
+                               params: (NSDictionary *)params {
+  NSString *jsonStr = [KSConvert dictionaryToJson:params];
+  if (jsonStr == nil) {
+    return  [self md5String:url] ;
+  }
+  NSString *urlAndParamsString =[url stringByAppendingString:jsonStr];
+  return  [self md5String:urlAndParamsString];
+}
+
+- (KSNetworkPreRequestItem *)itemForRequestKey: (NSString *)key {
+  if (key == nil) {
+    return nil;
+  }
+  KSNetworkPreRequestItem *result = [self.preRequestDic valueForKey:key];
+  return  result;
+}
+
+
 - (void)requestPOST:(nonnull NSString *)urlstring
              params:(nonnull NSDictionary *)params
             success:(responseSuccess)success
@@ -84,6 +245,7 @@
     }];
     [dataTask resume];
 }
+
 - (NSString *)dictParamsToString:(NSDictionary *)params {
     NSMutableString *paramsString = [[NSMutableString alloc] initWithCapacity:0];
        for (int i = 0;i < [params allKeys].count;i++) {
@@ -95,7 +257,28 @@
        }
     return paramsString.copy;
 }
+
 - (NSString *)httpMethod:(DPHTTPMethod)method {
     return method == DPHTTPGET ? @"GET":@"POST";
+}
+
+
+- ( NSString *)md5String:( NSString *)str {
+    
+    const char *myPasswd = [str UTF8String ];
+    
+    unsigned char mdc[ 16 ];
+    
+    CC_MD5 (myPasswd, ( CC_LONG ) strlen (myPasswd), mdc);
+    
+    NSMutableString *md5String = [ NSMutableString string ];
+    
+    for ( int i = 0 ; i< 16 ; i++) {
+        
+        [md5String appendFormat : @"%02x" ,mdc[i]];
+        
+    }
+    
+    return md5String;
 }
 @end
