@@ -25,6 +25,7 @@
 		6054256525C3FFA600810668 /* KSConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 6054252825C3DC1800810668 /* KSConvert.m */; };
 		6054256C25C4157400810668 /* KSAbsoluteTimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6054256B25C4157400810668 /* KSAbsoluteTimeManager.m */; };
 		6054257925C4406200810668 /* DPNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 602AB24125C2D076009F19D2 /* DPNetworkManager.m */; };
+		605425EC25C8FA4700810668 /* YYThreadSafeDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 605425EB25C8FA4700810668 /* YYThreadSafeDictionary.m */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		842EC00C5A31892F3F81EAD5 /* libPods-PreRequestDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B816CBBE30A4F49CC02ADEA6 /* libPods-PreRequestDemo.a */; };
 		CB8AE7E74F15A36276F40B64 /* libPods-PreRequestDemo-PreRequestDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88FB1F9BF424ACDFF712624F /* libPods-PreRequestDemo-PreRequestDemoTests.a */; };
@@ -84,6 +85,8 @@
 		6054256A25C4157400810668 /* KSAbsoluteTimeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KSAbsoluteTimeManager.h; sourceTree = "<group>"; };
 		6054256B25C4157400810668 /* KSAbsoluteTimeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KSAbsoluteTimeManager.m; sourceTree = "<group>"; };
 		6054258225C7D00300810668 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = ../../../../../Desktop/ViewController.m; sourceTree = "<group>"; };
+		605425EA25C8FA4700810668 /* YYThreadSafeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYThreadSafeDictionary.h; sourceTree = "<group>"; };
+		605425EB25C8FA4700810668 /* YYThreadSafeDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYThreadSafeDictionary.m; sourceTree = "<group>"; };
 		6664375D353FFB2B33991C68 /* libPods-PreRequestDemo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PreRequestDemo-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		69A963DCBA75A62C70C794AD /* Pods-PreRequestDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PreRequestDemo.debug.xcconfig"; path = "Target Support Files/Pods-PreRequestDemo/Pods-PreRequestDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		71C2B68C126133AF4CAAB601 /* Pods-PreRequestDemo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PreRequestDemo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-PreRequestDemo-tvOS/Pods-PreRequestDemo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -222,6 +225,8 @@
 		6054252D25C3DEB000810668 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				605425EA25C8FA4700810668 /* YYThreadSafeDictionary.h */,
+				605425EB25C8FA4700810668 /* YYThreadSafeDictionary.m */,
 				6054252E25C3DED500810668 /* KSNetworkPreRequestItem.h */,
 				6054252F25C3DED500810668 /* KSNetworkPreRequestItem.m */,
 			);
@@ -653,6 +658,7 @@
 				6054253025C3DED500810668 /* KSNetworkPreRequestItem.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				6054256C25C4157400810668 /* KSAbsoluteTimeManager.m in Sources */,
+				605425EC25C8FA4700810668 /* YYThreadSafeDictionary.m in Sources */,
 				602AB1D825C2A7CB009F19D2 /* FirstViewController.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				602AB1DF25C2A7F8009F19D2 /* MainViewController.m in Sources */,

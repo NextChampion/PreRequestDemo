@@ -1,9 +1,9 @@
 //
 //  DPNetworkManager.h
-//  Task2
+//  PreRequestDemo
 //
-//  Created by hzw on 2020/7/31.
-//  Copyright © 2020 BHB. All rights reserved.
+//  Created by zhangcunxia on 2021/1/28.
+//
 //
 
 #import <Foundation/Foundation.h>

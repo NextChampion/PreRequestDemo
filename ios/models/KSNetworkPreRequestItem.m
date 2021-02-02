@@ -9,4 +9,11 @@
 
 @implementation KSNetworkPreRequestItem
 
+- (NSMutableArray<onRequestFinishedBlock> *)callBacks {
+  if (_callBacks == nil) {
+    _callBacks = [[NSMutableArray alloc] init];
+  }
+  return  _callBacks;
+}
+
 @end

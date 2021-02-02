@@ -1,9 +1,9 @@
 //
 //  DPNetworkManager.m
-//  Task2
+//  PreRequestDemo
 //
-//  Created by hzw on 2020/7/31.
-//  Copyright © 2020 BHB. All rights reserved.
+//  Created by zhangcunxia on 2021/1/28.
+//
 //
 
 #import "DPNetworkManager.h"
@@ -11,12 +11,11 @@
 #import "KSNetworkPreRequestItem.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <pthread.h>
+#import "YYThreadSafeDictionary.h"
 
-@interface DPNetworkManager (){
-  pthread_mutex_t _lock;
-}
+@interface DPNetworkManager ()
 
-@property (nonatomic, strong) NSMutableDictionary *preRequestDic;
+@property (nonatomic, strong) YYThreadSafeDictionary *preRequestDic;
 
 @end
 
@@ -33,7 +32,7 @@
 
 - (NSMutableDictionary *)preRequestDic {
   if (_preRequestDic == nil) {
-    _preRequestDic = [NSMutableDictionary dictionary];
+    _preRequestDic = [[YYThreadSafeDictionary alloc] init];
   }
   return _preRequestDic;
 }
@@ -42,7 +41,6 @@
          params:(NSDictionary * )params {
   // 生成key
   NSString *requestKey = [self requestKeyWithUrlString:urlString params:params];
-  NSLog(@"转换后的key=%@", requestKey);
   // 检查是否有缓存
   KSNetworkPreRequestItem *oldItem = [self itemForRequestKey:requestKey];
   // 如果有缓存对象 (比如手误,或者卡顿导致rn入口被连击,发起两个预请求),如果有缓存对象,这不处理后续的
@@ -60,16 +58,15 @@
   __weak typeof(self) weakSelf = self;
   // 然后发起网络请求请求数据
   [self requestPOST:urlString params:params success:^(id  _Nonnull result) {
-    NSLog(@"预请求成功");
+    KSNetworkPreRequestItem *item = [weakSelf.preRequestDic objectForKey:requestKey];
       // 请求成功,标记预请求结束
-    newItem.isPropressing = NO;
+    item.isPropressing = NO;
       // 检查是否有回调,如果有的话, 表明非预请求的请求已经发了 直接通过回调返回数据,不再存在缓存里
-    NSLog(@"预请求成功 newPreRequest.callBacks = %@",newItem.callBacks);
-      if (newItem.callBacks.count > 0) {
-        for (int i = 0; i < newItem.callBacks.count; i ++) {
-          onRequestFinishedBlock callBack = newItem.callBacks[i];
+      if (item.callBacks.count > 0) {
+        for (int i = 0; i < item.callBacks.count; i ++) {
+          onRequestFinishedBlock callBack = item.callBacks[i];
           if (callBack != nil) {
-            callBack(true, result, nil);
+            callBack(YES, result, nil);
           }
         }
         // 同时也清除本次预请求的缓存信息
@@ -77,19 +74,19 @@
         return;;
       }
     // 如果没有回调任务, 记录一下预请求的结果
-    newItem.isError = NO;
-    newItem.result = result;
+    item.isError = NO;
+    item.result = result;
     } fail:^(DPRequestStatu status) {
-      NSLog(@"预请求失败");
+      KSNetworkPreRequestItem *item = [weakSelf.preRequestDic objectForKey:requestKey];
       // 请求失败,标记预请求结束
-      newItem.isPropressing = NO;
+      item.isPropressing = NO;
       // 检查是否有回调,如果有的话 直接通过回调返回数据,不在存在缓存里
-      if (newItem.callBacks.count > 0) {
-        for (int i = 0; i < newItem.callBacks.count; i ++) {
-          onRequestFinishedBlock callBack = newItem.callBacks[i];
+      if (item.callBacks.count > 0) {
+        for (int i = 0; i < item.callBacks.count; i ++) {
+          onRequestFinishedBlock callBack = item.callBacks[i];
           if (callBack != nil) {
             NSError *err = [NSError errorWithDomain:urlString code:status userInfo:nil];
-            callBack(false, nil, err);
+            callBack(NO, nil, err);
           }
         }
         // 清除本次请求的缓存对象
@@ -97,8 +94,8 @@
         return;;
       }
       // 如果没有回调任务, 记录一下预请求的结果
-      newItem.isError = YES;
-      newItem.errorCode = status;
+      item.isError = YES;
+      item.errorCode = status;
     }];
 }
 
@@ -107,17 +104,12 @@
       params:(NSDictionary *)params
     resolver:(RCTPromiseResolveBlock)resolve
     rejecter:(RCTPromiseRejectBlock)reject {
-  NSLog(@"urlString= %@",urlString);
-  NSLog(@"params= %@",params);
   // 对请求进行编码
   NSString *requestKey = [self requestKeyWithUrlString:urlString params:params];
-  NSLog(@"正式请求生成的key=%@", requestKey);
   // 查询是否有当前请求的预请求
   KSNetworkPreRequestItem *preRequestItem = [self itemForRequestKey:requestKey];
-  NSLog(@"正式请求的cache=%@", preRequestItem);
   // 如果存在预请求
   if (preRequestItem != nil) {
-    NSLog(@"正式请求的isPropressing=%d", preRequestItem.isPropressing);
     // 预请求是否正在进行中
     if (preRequestItem.isPropressing) {
       // 如果正在进行中,创建一个回调任务,添加到回调队列里
@@ -128,7 +120,6 @@
           reject(@"no_events", @"There were no events", error);
         }
       };
-      NSLog(@"添加回调任务");
       [preRequestItem.callBacks addObject:block];
       // 然后本次请求结束
       return;
